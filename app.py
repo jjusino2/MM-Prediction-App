@@ -159,4 +159,4 @@ def update_imp_graph(tab):
         return component_three.component_three()
 
 if __name__ == '__main__':
-    dash_app1.run_server(host='0.0.0.0', port=8081, debug=True, threaded=True)
+    dash_app1.run_server(port=8081, debug=True)
