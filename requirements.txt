@@ -26,3 +26,4 @@ dash-extensions
 sklearn
 datetime
 statsmodels
+gunicorn
