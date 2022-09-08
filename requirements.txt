@@ -26,4 +26,3 @@ dash-extensions
 sklearn
 datetime
 statsmodels
-pip install git+https://github.com/azure-samples/ms-identity-python-samples-common
