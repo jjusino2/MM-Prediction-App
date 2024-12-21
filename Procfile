@@ -1,1 +1,0 @@
-web: gunicorn jj-march-madness:server
