@@ -1,8 +1,12 @@
 import dash_bootstrap_components as dbc
 from dash import html, dcc 
 import pandas as pd
+from datetime import date
 
 def sidebar():
+    current_year = date.today().year
+    year1_list = [x for x in range(1939,current_year)]
+    year2_list = [x for x in range(1939,(current_year+1))]
     return dbc.Col(
         [
             html.Div(
@@ -10,28 +14,53 @@ def sidebar():
                     html.Div(
                         [
                             html.Span(
-                                'Item 1: ',
+                                'Select first year: ',
                                 style={
                                     "display":"inline",
-                                    "color":"#4f2d7f",
+                                    "color":"#000000",
                                 }
                             ),
                     html.Div(
-                        dbc.Button(
-                            "Download",
-                            color="dark",
-                            outline=True,
-                            id="item_1"
+                        dcc.Dropdown(
+                            year1_list,
+                            value=(current_year-5),
+                            id="range_year1"
                         ),
                         style={
-                            "borderRadius":"5px",
+                            "borderRadius":"10px",
                             "backgroundColor":"white"
                         }
                     ),
-                    dcc.Download(id="download_item1")
                         ],
                         style={
-                            "display":"flex",
+                            "flexDirection":"row",
+                            "justifyContent":"space-between",
+                            "alignItems":"center",
+                            "marginBottom":"1rem"
+                        }
+                    ),
+                    html.Div(
+                        [
+                            html.Span(
+                                'Select second year: ',
+                                style={
+                                    "display":"inline",
+                                    "color":"#000000",
+                                }
+                            ),
+                    html.Div(
+                        dcc.Dropdown(
+                            year2_list,
+                            value=current_year,
+                            id="range_year2"
+                        ),
+                        style={
+                            "borderRadius":"10px",
+                            "backgroundColor":"white"
+                        }
+                    ),
+                        ],
+                        style={
                             "flexDirection":"row",
                             "justifyContent":"space-between",
                             "alignItems":"center",

@@ -44,7 +44,7 @@ def tabs(content):
                 color="#0079c2",
             ),
         ],
-        width=18,
+        width=9,
         style={
             "padding-left":"0px",
             "padding-right":"0px",

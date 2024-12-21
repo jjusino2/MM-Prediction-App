@@ -1,19 +1,19 @@
 import re
 import pandas as pd
 import requests
-from bs4 import BeautifulSoup
+import bs4
 import os
 from datetime import datetime
 import collections
 import openpyxl
 #https://www.rotowire.com/cbasketball/injury-report.php website for injury report
 
-def NCAA_DF():
+def NCAA_DF(year1, year2):
     #To process how long the code takes to run
     start_time = datetime.now()
 
     #School years to use
-    years = range(2010,2022)
+    years = range(year1,(year2))
     headings_teams = [] # Headings for the file
     all_rows_teams = [] # will be a list for list for all rows
 
@@ -21,11 +21,11 @@ def NCAA_DF():
         url = 'https://www.sports-reference.com/cbb/seasons/'+str(year)+'-school-stats.html'
         teams_name = requests.get(url)
         teams_names = teams_name.content
-        soup = BeautifulSoup(teams_names, 'html.parser')
+        soup = bs4.BeautifulSoup(teams_names, 'html.parser')
 
 
-        Team_Names = soup.find_all("table", attrs={'id':'basic_school_stats'})
-        table = Team_Names[0]
+        team_names = soup.find_all("table", attrs={'id':'basic_school_stats'})
+        table = team_names[0]
         body = table.find_all('tr')
         head = body[1]
         body_rows = body[2:]
@@ -83,7 +83,7 @@ def NCAA_DF():
                                                     replace('unc-greensboro','north-carolina-greensboro').replace('tcu','texas-christian')+'/'+str(row['Year'])+'.html'
         teams_name1 = requests.get(url1)
         teams_names1 = teams_name1.content
-        soup1 = BeautifulSoup(teams_names1, 'html.parser')
+        soup1 = bs4.BeautifulSoup(teams_names1, 'html.parser')
 
         PG_Table = soup1.find_all("table", attrs={'id':'per_game'})
         table_stats = PG_Table[0]
@@ -137,7 +137,7 @@ def NCAA_DF():
         url_target = 'https://www.sports-reference.com/cbb/postseason/'+str(year)+'-ncaa.html'
         t = requests.get(url_target)
         t1 = t.content
-        soup_t = BeautifulSoup(t1, 'html.parser')
+        soup_t = bs4.BeautifulSoup(t1, 'html.parser')
         t_names = soup_t.find_all("div",  {'class': 'winner'})
 
         exec('t_list%d = []' % year)
@@ -172,34 +172,34 @@ def NCAA_DF():
 
     for i in range(1,7):
         exec("NCAA_Stats = pd.concat([NCAA_Stats, NCAA_Stats%d])" % year)
-    """
-    #Entering in the injury report
-    print('What is the name of the file your using for the injury report?')
-    IR_file = (str(input())+'.csv')
-    print('Where is the file?')
-    file_path = str(input())
-    os.chdir(file_path)
+    
+    # #Entering in the injury report
+    # print('What is the name of the file your using for the injury report?')
+    # IR_file = (str(input())+'.csv')
+    # print('Where is the file?')
+    # file_path = str(input())
+    # os.chdir(file_path)
 
-    Injury_report = pd.DataFrame(pd.read_csv(IR_file))
-    player_list = Injury_report['Player'].to_list()
-    IR_indicator = []
+    # Injury_report = pd.DataFrame(pd.read_csv(IR_file))
+    # player_list = Injury_report['Player'].to_list()
+    # IR_indicator = []
 
-    #Removing injuried players from our dataframe
-    for ir, row in NCAA_Stats.iterrows():
-        if row['Year'] == 2022:
-            if row['Player'] in player_list:
-                IR_indicator.append(1)
-            else:
-                IR_indicator.append(0)
-        else:
-            IR_indicator.append(0)
+    # #Removing injuried players from our dataframe
+    # for ir, row in NCAA_Stats.iterrows():
+    #     if row['Year'] == 2022:
+    #         if row['Player'] in player_list:
+    #             IR_indicator.append(1)
+    #         else:
+    #             IR_indicator.append(0)
+    #     else:
+    #         IR_indicator.append(0)
 
-    NCAA_Stats['IR Indicator'] = IR_indicator
+    # NCAA_Stats['IR Indicator'] = IR_indicator
 
-    for person, row in NCAA_Stats.iterrows():
-        if row['IR Indicator'] == 1:
-            row.pop()
-    """
+    # for person, row in NCAA_Stats.iterrows():
+    #     if row['IR Indicator'] == 1:
+    #         row.pop()
+
     #Combining the per player data by team
     Bracket_Data = NCAA_Stats.groupby(['School', 'Year'], as_index=False).agg(
         {'MP':'sum',
@@ -262,5 +262,21 @@ def NCAA_DF():
     Bracket_Data_Final['Con-W/L%'] = Con_Per
     Bracket_Data_Final['Home-W/L%'] = Home_Per
     Bracket_Data_Final['Away-W/L%'] = Away_Per
+    Bracket_Data_Final['MP'] = Bracket_Data_Final['MP']/(Bracket_Data_Final['W']+Bracket_Data_Final['L'])
+    Bracket_Data_Final['FG'] = Bracket_Data_Final['FG']/(Bracket_Data_Final['W']+Bracket_Data_Final['L'])
+    Bracket_Data_Final['FGA'] = Bracket_Data_Final['FGA']/(Bracket_Data_Final['W']+Bracket_Data_Final['L'])
+    Bracket_Data_Final['2P'] = Bracket_Data_Final['2P']/(Bracket_Data_Final['W']+Bracket_Data_Final['L'])
+    Bracket_Data_Final['2PA'] = Bracket_Data_Final['2PA']/(Bracket_Data_Final['W']+Bracket_Data_Final['L'])
+    Bracket_Data_Final['3P'] = Bracket_Data_Final['3P']/(Bracket_Data_Final['W']+Bracket_Data_Final['L'])
+    Bracket_Data_Final['3P'] = Bracket_Data_Final['3PA']/(Bracket_Data_Final['W']+Bracket_Data_Final['L'])
+    Bracket_Data_Final['FT'] = Bracket_Data_Final['FT']/(Bracket_Data_Final['W']+Bracket_Data_Final['L'])
+    Bracket_Data_Final['FTA'] = Bracket_Data_Final['FTA']/(Bracket_Data_Final['W']+Bracket_Data_Final['L'])
+    Bracket_Data_Final['ORB'] = Bracket_Data_Final['ORB']/(Bracket_Data_Final['W']+Bracket_Data_Final['L'])
+    Bracket_Data_Final['DRB'] = Bracket_Data_Final['DRB']/(Bracket_Data_Final['W']+Bracket_Data_Final['L'])
+    Bracket_Data_Final['TRB'] = Bracket_Data_Final['TRB']/(Bracket_Data_Final['W']+Bracket_Data_Final['L'])
+    Bracket_Data_Final['AST'] = Bracket_Data_Final['AST']/(Bracket_Data_Final['W']+Bracket_Data_Final['L'])
+    Bracket_Data_Final['TOV'] = Bracket_Data_Final['TOV']/(Bracket_Data_Final['W']+Bracket_Data_Final['L'])
+    Bracket_Data_Final['PF'] = Bracket_Data_Final['PF']/(Bracket_Data_Final['W']+Bracket_Data_Final['L'])
+    Bracket_Data_Final['PTS'] = Bracket_Data_Final['PTS']/(Bracket_Data_Final['W']+Bracket_Data_Final['L'])
 
     return Bracket_Data_Final

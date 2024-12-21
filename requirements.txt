@@ -27,3 +27,4 @@ sklearn
 datetime
 statsmodels
 gunicorn
+BeautifulSoup4

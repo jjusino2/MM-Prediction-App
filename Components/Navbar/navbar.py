@@ -27,7 +27,12 @@ def navbar(img_path):
                                             html.Strong(
                                                 "| March Madness Prediction Tool",
                                                 style={"fontSize":"min(2vw, 2rem)"}
-                                            )
+                                            ),
+                                            dcc.Store(id='bracket_data', storage_type='local'),
+                                            dcc.Store(id='year1_output', storage_type='local'),
+                                            dcc.Store(id='year2_output', storage_type='local'),
+                                            dcc.Store(id='team-1-selected', storage_type='local'),
+                                            dcc.Store(id='team-2-selected', storage_type='local')
                                         ],
                                         style={
                                             "display":"inline-block",
